@@ -12,3 +12,17 @@ terraform {
 provider "aws" {
   region  = "ap-southeast-2"
 }
+
+# Import existing VPC
+import {
+  to = aws_vpc.default_vpc
+  id = "vpc-0eb4e94ab2c8b37a6"
+}
+
+resource "aws_vpc" "default_vpc" {
+  tags = {
+    "Name"  = "marketplace-vpc"
+    "owner" = "yogeshwar.chaudhari"
+  }
+}
+
