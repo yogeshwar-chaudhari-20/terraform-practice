@@ -117,13 +117,13 @@ data "aws_iam_policy_document" "bucket_access_policy_document" {
   statement {
     sid       = "sid001"
     actions   = ["s3:PutObject", "s3:GetObject"]
-    resources = ["arn:aws:s3:::compression_bucket/*"]
+    resources = ["arn:aws:s3:::hfmsune-compression-bucket/*"]
     effect    = "Allow"
   }
   statement {
     sid       = "sid002"
     actions   = ["s3:PutObject", "s3:GetObject"]
-    resources = ["arn:aws:s3:::user_data_bucket/*"]
+    resources = ["arn:aws:s3:::hfmsune-user-data-bucket/*"]
     effect    = "Allow"
   }
 }

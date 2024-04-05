@@ -1,6 +1,6 @@
 # Compression bucket
 resource "aws_s3_bucket" "compression_bucket" {
-  bucket = "compression_bucket"
+  bucket = "hfmsune-compression-bucket"
 
   tags = {
     environment = ""
@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "compression_bucket" {
 }
 
 resource "aws_s3_bucket" "user_data_bucket" {
-  bucket = "user_data_bucket"
+  bucket = "hfmsune-user-data-bucket"
 
   tags = {
     environment = ""
