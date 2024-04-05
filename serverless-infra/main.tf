@@ -3,7 +3,7 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 4.16"
-    }
+    }    
   }
 
   required_version = ">= 1.2.0"
@@ -11,6 +11,11 @@ terraform {
 
 provider "aws" {
   region  = "ap-southeast-2"
+  default_tags {
+    tags = {
+      environment = "${var.env}"
+    }
+  }
 }
 
 # Import existing VPC
@@ -26,44 +31,18 @@ resource "aws_vpc" "default_vpc" {
   }
 }
 
-# Create a s3 bucket to upload function code
-variable "lamda_bucket_name" {
-  type = string
-  default = "function-code-bucket"
-}
-
-resource "aws_s3_bucket" "lambda_bucket" {
-  bucket = var.lamda_bucket_name
-}
-
-resource "aws_s3_bucket_ownership_controls" "lambda_bucket" {
-  bucket = aws_s3_bucket.lambda_bucket.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
-
-# Create and upload the function code to lambda s3 bucket
-resource "aws_s3_bucket_acl" "lambda_bucket" {
-  depends_on = [aws_s3_bucket_ownership_controls.lambda_bucket]
-
-  bucket = aws_s3_bucket.lambda_bucket.id
-  acl    = "private"
-}
-
-
 data "archive_file" "lambda_fn_zip" {
   type = "zip"
 
   # Change the name of the folder as per repo name
   source_dir  = "${path.module}/hello-world"
-  output_path = "${path.module}/hello-world.zip"
+  output_path = "${path.module}/${var.env}-hello-world.zip"
 }
 
 resource "aws_s3_object" "lambda_fn_zip" {
   bucket = aws_s3_bucket.lambda_bucket.id
 
-  key    = "hello-world.zip"
+  key    = "${var.env}-hello-world.zip"
   source = data.archive_file.lambda_fn_zip.output_path
 
   etag = filemd5(data.archive_file.lambda_fn_zip.output_path)
@@ -117,13 +96,13 @@ data "aws_iam_policy_document" "bucket_access_policy_document" {
   statement {
     sid       = "sid001"
     actions   = ["s3:PutObject", "s3:GetObject"]
-    resources = ["arn:aws:s3:::hfmsune-compression-bucket/*"]
+    resources = ["arn:aws:s3:::${var.env}-compression-bucket/*"]
     effect    = "Allow"
   }
   statement {
     sid       = "sid002"
     actions   = ["s3:PutObject", "s3:GetObject"]
-    resources = ["arn:aws:s3:::hfmsune-user-data-bucket/*"]
+    resources = ["arn:aws:s3:::${var.env}-user-data-bucket/*"]
     effect    = "Allow"
   }
 }
@@ -140,3 +119,5 @@ resource "aws_iam_role_policy_attachment" "lamda_bucket_policy_attachment" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = aws_iam_policy.bucket_access_policy.arn
 }
+
+variable "env" {}
