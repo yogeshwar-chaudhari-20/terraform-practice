@@ -120,6 +120,16 @@ resource "aws_iam_role_policy_attachment" "lamda_bucket_policy_attachment" {
   policy_arn = aws_iam_policy.bucket_access_policy.arn
 }
 
+# Fetching the SSM read only policy
+data "aws_iam_policy" "AmazonSSMReadOnlyAccess" {
+  name = "AmazonSSMReadOnlyAccess"
+}
+resource "aws_iam_role_policy_attachment" "lambda_ssm_policy_attachment" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = data.aws_iam_policy.AmazonSSMReadOnlyAccess.arn
+}
+# Lambda has read access to SSM
+
 variable "env" {
   default = "development"
 }
