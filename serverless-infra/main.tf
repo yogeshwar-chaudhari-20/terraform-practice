@@ -70,7 +70,6 @@ resource "aws_s3_object" "lambda_fn_zip" {
 }
 
 # Create lambda function
-
 resource "aws_lambda_function" "hello_world" {
   function_name = "HelloWorld"
 
@@ -111,4 +110,33 @@ resource "aws_iam_role" "lambda_exec" {
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+# Create a IAM policy JSON to allow PutObject, GetObject operations on buckets
+data "aws_iam_policy_document" "bucket_access_policy_document" {
+  statement {
+    sid       = "sid001"
+    actions   = ["s3:PutObject", "s3:GetObject"]
+    resources = ["arn:aws:s3:::compression_bucket/*"]
+    effect    = "Allow"
+  }
+  statement {
+    sid       = "sid002"
+    actions   = ["s3:PutObject", "s3:GetObject"]
+    resources = ["arn:aws:s3:::user_data_bucket/*"]
+    effect    = "Allow"
+  }
+}
+
+# Create a IAM policy using above JSON statements.
+resource "aws_iam_policy" "bucket_access_policy" {
+  name        = "bucket_access_policy"
+  description = "Policy to allow lamda to create and get object/s from bucket"
+  policy      = data.aws_iam_policy_document.bucket_access_policy_document.json
+}
+
+# Attaching invoice bucket access policy to Lamda execution role.
+resource "aws_iam_role_policy_attachment" "lamda_bucket_policy_attachment" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = aws_iam_policy.bucket_access_policy.arn
 }
