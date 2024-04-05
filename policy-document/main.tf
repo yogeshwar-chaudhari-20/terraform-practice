@@ -28,7 +28,7 @@ resource "aws_iam_policy" "bucket_write_policy" {
    policy = data.aws_iam_policy_document.bucket_write_policy_statements.json
 }
 
-resource "aws_iam_role_policy_attachment" "lamda_bucket_write_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "lambda_bucket_write_policy_attachment" {
   role       = "yogi-file-upload-function-role-57gcjlh0"
   policy_arn = aws_iam_policy.bucket_write_policy.arn
 }

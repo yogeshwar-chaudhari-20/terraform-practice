@@ -110,12 +110,12 @@ data "aws_iam_policy_document" "bucket_access_policy_document" {
 # Create a IAM policy using above JSON statements.
 resource "aws_iam_policy" "bucket_access_policy" {
   name        = "bucket_access_policy"
-  description = "Policy to allow lamda to create and get object/s from bucket"
+  description = "Policy to allow lambda to create and get object/s from bucket"
   policy      = data.aws_iam_policy_document.bucket_access_policy_document.json
 }
 
-# Attaching invoice bucket access policy to Lamda execution role.
-resource "aws_iam_role_policy_attachment" "lamda_bucket_policy_attachment" {
+# Attaching invoice bucket access policy to Lambda execution role.
+resource "aws_iam_role_policy_attachment" "lambda_bucket_policy_attachment" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = aws_iam_policy.bucket_access_policy.arn
 }
