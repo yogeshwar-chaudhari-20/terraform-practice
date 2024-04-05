@@ -77,7 +77,7 @@ resource "aws_lambda_function" "hello_world" {
   s3_bucket = aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambda_fn_zip.key
 
-  runtime = "nodejs20.x"
+  runtime = "nodejs18.x"
   handler = "hello.handler"
 
   source_code_hash = data.archive_file.lambda_fn_zip.output_base64sha256
@@ -88,7 +88,7 @@ resource "aws_lambda_function" "hello_world" {
 resource "aws_cloudwatch_log_group" "hello_world" {
   name = "/aws/lambda/${aws_lambda_function.hello_world.function_name}"
 
-  retention_in_days = 10
+  retention_in_days = 14
 }
 
 resource "aws_iam_role" "lambda_exec" {
