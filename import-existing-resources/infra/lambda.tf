@@ -81,3 +81,12 @@ resource "aws_iam_role_policy_attachment" "lambda_bucket_policy_attachment" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.compressor_fn_bucket_policy.arn
 }
+
+resource "aws_lambda_permission" "s3_trigger_permission" {
+  statement_id  = "AllowS3ToInvokeLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.user_picture_compressor_lambda.arn
+  principal     = "s3.amazonaws.com"
+
+  source_arn = aws_s3_bucket.compression_bucket.arn
+}
