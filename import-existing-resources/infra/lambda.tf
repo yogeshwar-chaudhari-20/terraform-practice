@@ -39,6 +39,7 @@ resource "aws_s3_object" "lambda_fn_zip" {
 
 resource "aws_lambda_function" "user_picture_compressor_lambda" {
   function_name = "user_picture_compressor"
+  description   = "Function for compressing files uploaded in s3 bucket and transfering smaller files to dest bucket."
 
   s3_bucket = data.aws_s3_bucket.lambda_bucket.id
   s3_key    = aws_s3_object.lambda_fn_zip.key
@@ -48,7 +49,9 @@ resource "aws_lambda_function" "user_picture_compressor_lambda" {
 
   source_code_hash = data.archive_file.lambda_fn_zip.output_base64sha256
 
-  runtime = "nodejs18.x"
+  runtime     = "nodejs18.x"
+  memory_size = 512
+  timeout     = 6
 
   environment {
     variables = {
