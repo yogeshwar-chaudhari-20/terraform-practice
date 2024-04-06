@@ -82,6 +82,13 @@ resource "aws_iam_role_policy_attachment" "lambda_bucket_policy_attachment" {
   policy_arn = aws_iam_policy.compressor_fn_bucket_policy.arn
 }
 
+
+resource "aws_cloudwatch_log_group" "hello_world" {
+  name = "/aws/lambda/${aws_lambda_function.user_picture_compressor_lambda.function_name}"
+
+  retention_in_days = 14
+}
+
 resource "aws_lambda_permission" "s3_trigger_permission" {
   statement_id  = "AllowS3ToInvokeLambda"
   action        = "lambda:InvokeFunction"
